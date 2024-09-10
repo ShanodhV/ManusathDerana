@@ -5,6 +5,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import morgan from "morgan";
+import path from "path";
+import { fileURLToPath } from "url";
 import clientRoutes from "./routes/client.js";
 import generalRoutes from "./routes/general.js";
 import managementRoutes from "./routes/management.js";
@@ -23,10 +25,17 @@ import volunteerEventRoutes from "./routes/volunteerEvent_routes.js";
 import userRoutes from "./routes/users.js";
 import authRoutes from "./routes/auth.js";
 
+import treeplantation from "./routes/treeplantation.js";
+import sponsors from "./routes/sponsors.js";
+import dEventRoutes from "./routes/d_events_routes.js";
+import itemsRoutes from "./routes/items_routes.js";
+import items_outRoutes from "./routes/items_out_routes.js";
+import items_inRoutes from "./routes/items_in_routes.js";
+
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 
 // data imports
-import Camps from './models/Camps.js';
+import Camps from "./models/Camps.js";
 import Patients from "./models/Patient.js";
 import LabReport from "./models/LabReport.js";
 import User from "./models/User.js";
@@ -36,13 +45,15 @@ import ProductStat from "./models/ProductStat.js";
 import Transaction from "./models/Transaction.js";
 import OverallStat from "./models/OverallStat.js";
 import AffiliateStat from "./models/AffiliateStat.js";
-import {
-  labReports,
-} from "./data/index.js";
+import { labReports } from "./data/index.js";
 
 /* CONFIGURATION */
 dotenv.config();
 const app = express();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
@@ -66,10 +77,20 @@ app.use("/student", studentRoutes);
 app.use("/donor-volunteer", donerVolunteerRoutes);
 app.use("/volunteer", volunteerRoutes);
 app.use("/volunteer-event", volunteerEventRoutes);
-app.use("/dashboard", dashboardRoutes); 
+app.use("/dashboard", dashboardRoutes);
+
+app.use("/donorevents", dEventRoutes);
+app.use("/items", itemsRoutes);
+app.use("/items_out", items_outRoutes);
+app.use("/items_in", items_inRoutes);
+app.use("/treePlantationEvent", treeplantation);
+app.use("/sponsors", sponsors);
 
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
+
+// Serve static files from the uploads directory
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /* MONGOOSE SETUP */
 const PORT = process.env.PORT || 9000;
